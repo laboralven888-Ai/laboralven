@@ -19,12 +19,12 @@ async function fixAdmin() {
   console.log(`Encontrados ${users.length} usuarios en Auth.`)
 
   for (const u of users) {
-    if (u.email.includes('laboralven888@gmail.com')) {
+    if (u.email.includes(process.env.ADMIN_EMAIL)) {
       console.log(`Fijando privilegios para: ${u.email} (${u.id})`)
-      
+
       const { data, error } = await supabase.from('users').upsert({
         id: u.id,
-        email: 'laboralven888@gmail.com',
+        email: process.env.ADMIN_EMAIL,
         full_name: 'Super Admin',
         is_admin: true,
         plan: 'pro',
