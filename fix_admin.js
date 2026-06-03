@@ -7,6 +7,13 @@ const supabase = createClient(
 )
 
 async function fixAdmin() {
+  const adminEmail = process.env.ADMIN_EMAIL
+
+  if (!adminEmail) {
+    console.error('❌ Falta la variable ADMIN_EMAIL en .env.local')
+    return
+  }
+
   console.log('Buscando usuarios en Auth...')
   const { data: authData, error: authError } = await supabase.auth.admin.listUsers()
   
@@ -19,12 +26,12 @@ async function fixAdmin() {
   console.log(`Encontrados ${users.length} usuarios en Auth.`)
 
   for (const u of users) {
-    if (u.email.includes('laboralven888@gmail.com')) {
+    if (u.email === adminEmail) {
       console.log(`Fijando privilegios para: ${u.email} (${u.id})`)
       
       const { data, error } = await supabase.from('users').upsert({
         id: u.id,
-        email: 'laboralven888@gmail.com',
+        email: u.email,
         full_name: 'Super Admin',
         is_admin: true,
         plan: 'pro',
@@ -33,7 +40,7 @@ async function fixAdmin() {
       }).select()
 
       if (error) console.error('Error Upsert:', error)
-      else console.log('Usuario actualizado correctamente:', data)
+      else console.log('✅ Usuario actualizado correctamente:', data)
     }
   }
 }
