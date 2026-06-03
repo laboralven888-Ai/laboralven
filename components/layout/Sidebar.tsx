@@ -3,6 +3,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Conversation } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
 import { useState } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface SidebarProps {
   conversations: Conversation[]
@@ -11,6 +12,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ conversations, isMobileOpen, setMobileOpen }: SidebarProps) {
+  const { appUser } = useAuth()
   const pathname = usePathname()
   const router = useRouter()
 
@@ -95,7 +97,21 @@ export function Sidebar({ conversations, isMobileOpen, setMobileOpen }: SidebarP
           </div>
         </div>
 
-        <div className="p-4 border-t border-white/10">
+        <div className="p-4 border-t border-white/10 space-y-2">
+          {appUser?.is_admin && (
+            <Link
+              href="/admin"
+              onClick={() => window.innerWidth < 768 && setMobileOpen(false)}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                pathname === '/admin' 
+                  ? 'bg-amber-500/20 text-amber-500 font-medium' 
+                  : 'text-white/70 hover:bg-amber-500/10 hover:text-amber-500'
+              }`}
+            >
+              <span className="text-lg">🛡️</span>
+              Panel de Admin
+            </Link>
+          )}
           <Link
             href="/history"
             onClick={() => window.innerWidth < 768 && setMobileOpen(false)}
